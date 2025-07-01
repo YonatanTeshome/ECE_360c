@@ -77,25 +77,25 @@ public class Program1 extends AbstractProgram1 {
                 schoolMatches.get(matchedSchool).add(student);
             }
         }
-        /*
 
-        int spot = highschool_spots.get(0);
-
-        for (int i = 1; i < highschool_spots.size(); i++) {
-            System.out.println(highschool_preference.get(i));
-        }
-
-        int[] highschool_spots_copy1 = new int[highschool_spots.size()]; //copy of spots so we can modify
-        for (int i = 0; i < highschool_spots.size(); i++) {
-            highschool_spots_copy1[i] = highschool_spots.get(i);
-        }
-        int[] highschool_spots_copy2 = new int[highschool_spots.size()]; //copy of spots so we can modify
-        for (int i = 0; i < highschool_spots.size(); i++) {
-            highschool_spots_copy2[i] = highschool_spots.get(i);
-        }
-
-        int preference = highschool_preference.get(0).indexOf(3);
+        /**
+         * Instability type 1: Unmatched student s' is preferred over matched student s at h high school
          */
+        for (int s = 0; s < numStudents; s++) {
+            if (schoolMatches.get(s) != null) continue; //filters for unmatched students
+
+            for (int h = 0; h < numSchools; h++) {
+                List<Integer> matchedStudents = schoolMatches.get(h);
+                if (!highschool_preference.get(h).contains(s)) continue; // school h doesn't want student s
+
+                for(int current : matchedStudents) {
+                    if (schoolRank[h][s] < schoolRank[s][current]) {
+                        return false; // school h prefers unmatched student s over their current student match
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
