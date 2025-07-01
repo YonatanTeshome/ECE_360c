@@ -96,7 +96,36 @@ public class Program1 extends AbstractProgram1 {
             }
         }
 
-        return false;
+        /**
+         * Instability type 2: Mutually preferred switch
+         *
+         * school h1 prefers student s1 over student s2
+         *              And
+         * student s1 prefers school h1 over school h2
+         */
+
+
+        for (int s1 = 0; s1 < numStudents; s1++) {
+            int h1 = studentMatching.get(s1);
+            if (h1 == -1) continue;
+
+            for (int s2 = 0; s2 < numStudents; s2++) {
+                if (s1 == s2) continue;
+                int h2 = studentMatching.get(s2);
+                if (h2 == -1) continue;
+
+                boolean h1PrefS2 = schoolRank[h1][s2] < schoolRank[h1][s1]; // The lower the rank the better
+                boolean s2PrefH1 = schoolRank[s2][h1] < schoolRank[s2][h2]; // The lower the rank the better
+
+                if(h1PrefS2 && s2PrefH1) { // both had to be true since its mutual
+                    return false;
+                }
+
+            }
+
+        }
+
+        return true; // No instabilities found
     }
 
     /**
