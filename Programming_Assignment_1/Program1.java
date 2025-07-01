@@ -3,9 +3,7 @@
  * EID: <your EID>
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Your solution goes in this class.
@@ -32,7 +30,7 @@ public class Program1 extends AbstractProgram1 {
         int numSchools = problem.getHighSchoolCount();
         int numStudents = problem.getStudentCount();
 
-        ArrayList<Integer> sudentMatching = problem.getStudentMatching();
+        ArrayList<Integer> studentMatching = problem.getStudentMatching();
         ArrayList<Integer> highschool_spots = problem.getHighSchoolSpots();
         ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
         ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
@@ -49,7 +47,7 @@ public class Program1 extends AbstractProgram1 {
                 int student = prefs.get(rank);
                 schoolRank[highSchool][student] = rank;
             }
-             System.out.println(Arrays.toString(schoolRank[highSchool])); //Prints the preference of highschools based on rank
+            //System.out.println(Arrays.toString(schoolRank[highSchool])); //Prints the preference of highschools based on rank
         }
 
         /**
@@ -62,7 +60,22 @@ public class Program1 extends AbstractProgram1 {
                 int highSchool = prefs.get(rank);
                 schoolRank[student][highSchool] = rank;
             }
-            System.out.println(Arrays.toString(studentRank[student])); //Prints the preference of students based on rank
+            //System.out.println(Arrays.toString(studentRank[student])); //Prints the preference of students based on rank
+        }
+
+        /**
+         * Build map of which students are currently matched to each school
+         */
+        Map<Integer, List<Integer>> schoolMatches = new HashMap<>();
+        for (int school = 0; school < numSchools; school++) {
+            schoolMatches.put(school, new ArrayList<>());
+        }
+
+        for (int student = 0; student < numStudents; student++) {
+            int matchedSchool = studentMatching.get(student);
+            if (matchedSchool != -1) {
+                schoolMatches.get(matchedSchool).add(student);
+            }
         }
         /*
 
