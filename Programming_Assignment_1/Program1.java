@@ -29,7 +29,60 @@ public class Program1 extends AbstractProgram1 {
     @Override
     public boolean isStableMatching(Matching problem) {
         /* TODO implement this function */
+        int numSchools = problem.getHighSchoolCount();
+        int numStudents = problem.getStudentCount();
 
+        ArrayList<Integer> sudentMatching = problem.getStudentMatching();
+        ArrayList<Integer> highschool_spots = problem.getHighSchoolSpots();
+        ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
+        ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
+
+        /**
+         *Creating a rank map for comparison
+         *
+         * SchoolRank[hs][s] = rank of student s in highschool hs's preference list
+         */
+        int[][] schoolRank = new int[numSchools][numStudents];
+        for (int highSchool = 0; highSchool < numSchools; highSchool++) {
+            ArrayList<Integer> prefs = highschool_preference.get(highSchool);
+            for (int rank = 0; rank < prefs.size(); rank++) {
+                int student = prefs.get(rank);
+                schoolRank[highSchool][student] = rank;
+            }
+             System.out.println(Arrays.toString(schoolRank[highSchool])); //Prints the preference of highschools based on rank
+        }
+
+        /**
+         * StudentRank[s][hs] = rank of school hs in student s's preference list
+         */
+        int[][] studentRank = new int[numStudents][numSchools];
+        for (int student = 0; student < numStudents; student++) {
+            ArrayList<Integer> prefs = student_preference.get(student);
+            for (int rank = 0; rank < prefs.size(); rank++) {
+                int highSchool = prefs.get(rank);
+                schoolRank[student][highSchool] = rank;
+            }
+            System.out.println(Arrays.toString(studentRank[student])); //Prints the preference of students based on rank
+        }
+        /*
+
+        int spot = highschool_spots.get(0);
+
+        for (int i = 1; i < highschool_spots.size(); i++) {
+            System.out.println(highschool_preference.get(i));
+        }
+
+        int[] highschool_spots_copy1 = new int[highschool_spots.size()]; //copy of spots so we can modify
+        for (int i = 0; i < highschool_spots.size(); i++) {
+            highschool_spots_copy1[i] = highschool_spots.get(i);
+        }
+        int[] highschool_spots_copy2 = new int[highschool_spots.size()]; //copy of spots so we can modify
+        for (int i = 0; i < highschool_spots.size(); i++) {
+            highschool_spots_copy2[i] = highschool_spots.get(i);
+        }
+
+        int preference = highschool_preference.get(0).indexOf(3);
+         */
         return false;
     }
 

@@ -26,15 +26,23 @@ public class Matching {
     private ArrayList<ArrayList<Integer>> student_preference;
 
     /**
-     * Number of spots available in each highschool.
+     * Number of spots available in each high school.
      */
     private ArrayList<Integer> highschool_spots;
 
     /**
-     * Matching information representing the index of highschool a student is matched to, -1 if not
+     * Matching information representing the index of high school a student is matched to, -1 if not
      * matched.
      *
      * <p>An empty matching is represented by a null value for this field.
+     *
+     * EXAMPLE:
+     *  IF
+     *      studentMatching = [1,-1,2]
+     *  THEN
+     *      student 0 -> highschool 1
+     *      student 1 -> unmatched
+     *      student 2 -> highschool 2
      */
     private ArrayList<Integer> student_matching;
 
