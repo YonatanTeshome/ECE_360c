@@ -162,9 +162,9 @@ public class Program1 extends AbstractProgram1 {
          */
         int[][] studentRank = new int[numStudents][numSchools];
         for (int student = 0; student < numStudents; student++) {
-            ArrayList<Integer> prefs = highschool_preference.get(student);
+            ArrayList<Integer> prefs = student_preference.get(student);
             for (int rank = 0; rank < prefs.size(); rank++) {
-                studentRank[student][prefs.get(rank)] = rank;
+                studentRank[student][prefs.get(rank)] = rank; // the rank of high school h in student s's preference list
             }
         }
 
@@ -173,16 +173,55 @@ public class Program1 extends AbstractProgram1 {
          *             And
          * Track the current proposed students per school for quota
          */
-        int[] proposal = new int[numSchools]; // proposers are the schools due to the limited spots
-        Queue<Integer> emptySchools = new LinkedList<>();
+        int[] nextProposal = new int[numSchools]; // proposers are the schools due to the limited spots
+        Queue<Integer> freeSchools = new LinkedList<>(); // track schools that will want students
 
         List<Set<Integer>> acceptedStudents = new ArrayList<>();
         for (int school = 0; school < numSchools; school++) {
-            acceptedStudents.add(new HashSet<>());
+            acceptedStudents.add(new HashSet<>()); // gives each school a set int where they can store accepted students IDs
             if (highschool_spots.get(school) > 0) {
-                emptySchools.add(school); // enqueue if the school has available spots
+                freeSchools.add(school); // enqueue if the school has available spots
             }
         }
+
+        /**
+         * Gale Shapley loop
+         */
+        while (!freeSchools.isEmpty()) { // runs till schools meet their quota
+            int school = freeSchools.poll(); // .poll returns the element at the front of the queue
+
+            ArrayList<Integer> prefs = highschool_preference.get(school);
+            int proposals = 0;
+
+            while (acceptedStudents.get(school).size() < highschool_spots.get(school)
+                                            && nextProposal[school] < prefs.size()) {
+
+                int student = prefs.get(nextProposal[school]+1);
+                int currMatch = studentMatching.get(student);
+
+                if (currMatch == -1) { // student is unmatched and accepts the school's proposal
+                    studentMatching.set(student, school);
+                    acceptedStudents.get(school).add(student);
+                }else {
+                    int currRank = studentRank[student][currMatch]; // the student is matched so has to decide between current match or new offer
+                    int newRank = studentRank[student][school];
+
+                    if (newRank < currRank) {
+                        acceptedStudents.get(currMatch).remove(student); // new proposal is better so gets replaced
+                        if (acceptedStudents.get(currMatch).size() < highschool_spots.get(currMatch)) {
+                            freeSchools.add(currMatch); // requeue old school if it still has space
+                        }
+                        studentMatching.set(student, school);
+                        acceptedStudents.get(school).add(student);
+                    }
+                    // rejected by student
+                }
+            }
+            if (acceptedStudents.get(school).size() < highschool_spots.get(school) && nextProposal[school] < prefs.size()) {
+                freeSchools.add(school);
+            }
+        }
+        problem.setStudentMatching(studentMatching);
         return problem;
     }
 }
