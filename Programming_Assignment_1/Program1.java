@@ -1,6 +1,6 @@
 /*
- * Name: <your name>
- * EID: <your EID>
+ * Name: Yonatan Teshome
+ * EID: YH23572
  */
 
 import java.util.*;
@@ -35,7 +35,9 @@ public class Program1 extends AbstractProgram1 {
         ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
         ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
 
-        /**
+        if(studentMatching == null || studentMatching.isEmpty()) return false; // handle null/ empty matchings
+
+        /*
          *Creating a rank map for comparison
          *
          * SchoolRank[hs][s] = rank of student s in highschool hs's preference list
@@ -50,20 +52,19 @@ public class Program1 extends AbstractProgram1 {
             //System.out.println(Arrays.toString(schoolRank[highSchool])); //Prints the preference of highschools based on rank
         }
 
-        /**
+        /*
          * StudentRank[s][hs] = rank of school hs in student s's preference list
          */
         int[][] studentRank = new int[numStudents][numSchools];
         for (int student = 0; student < numStudents; student++) {
             ArrayList<Integer> prefs = student_preference.get(student);
             for (int rank = 0; rank < prefs.size(); rank++) {
-                int highSchool = prefs.get(rank);
-                schoolRank[student][highSchool] = rank;
+                studentRank[student][prefs.get(rank)] = rank;
             }
             //System.out.println(Arrays.toString(studentRank[student])); //Prints the preference of students based on rank
         }
 
-        /**
+        /*
          * Build map of which students are currently matched to each school
          */
         Map<Integer, List<Integer>> schoolMatches = new HashMap<>();
@@ -72,13 +73,14 @@ public class Program1 extends AbstractProgram1 {
         }
 
         for (int student = 0; student < numStudents; student++) {
+
             int matchedSchool = studentMatching.get(student);
             if (matchedSchool != -1) {
                 schoolMatches.get(matchedSchool).add(student);
             }
         }
 
-        /**
+        /*
          * Instability type 1: Unmatched student s' is preferred over matched student s at h high school
          */
         for (int s = 0; s < numStudents; s++) {
@@ -96,7 +98,7 @@ public class Program1 extends AbstractProgram1 {
             }
         }
 
-        /**
+        /*
          * Instability type 2: Mutually preferred switch
          *
          * school h1 prefers student s1 over student s2
@@ -123,7 +125,7 @@ public class Program1 extends AbstractProgram1 {
         return true; // No instabilities found
     }
 
-    /**
+    /*
      * Determines a solution to the stable matching problem from the given input set. Study the
      * project description to understand the variables which represent the input to your solution.
      *
@@ -132,7 +134,88 @@ public class Program1 extends AbstractProgram1 {
     @Override
     public Matching stableMatchingGaleShapley_studentoptimal(Matching problem) {
         /* TODO implement this function */
+        int numSchools = problem.getHighSchoolCount();
+        int numStudents = problem.getStudentCount();
 
+        ArrayList<Integer> highschool_spots = problem.getHighSchoolSpots();
+        ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
+        ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
+
+        /*
+         * Initialize student matches to -1 so everyone is unmatched
+         */
+        ArrayList<Integer> studentMatching = new ArrayList<>(Collections.nCopies(numStudents, -1));
+
+        /*
+         * Creating a rank lookup for comparisons of offers
+         */
+        int[][] schoolRank = new int[numSchools][numStudents];
+        for (int school = 0; school < numSchools; school++) {
+            ArrayList<Integer> prefs = highschool_preference.get(school);
+            for (int rank = 0; rank < prefs.size(); rank++) {
+                schoolRank[school][prefs.get(rank)] = rank; // the rank of student s in schools h's preference list
+            }
+        }
+
+        /*
+         * Proposer status
+         *             And
+         * Track accepted students at each school
+         */
+        int[] nextProposal = new int[numStudents]; // proposers are the schools due to the limited spots
+        Queue<Integer> freeStudents = new LinkedList<>(); // track schools that will want students
+
+        for (int student = 0; student < numStudents; student++) {
+            freeStudents.add(student); // all students start free
+        }
+
+        List<Set<Integer>> acceptedStudents = new ArrayList<>();
+        for (int school = 0; school < numSchools; school++) {
+            acceptedStudents.add(new HashSet<>());
+        }
+
+        /*
+         * Proposal loop
+         */
+        while (!freeStudents.isEmpty()) {
+            int student = freeStudents.poll(); // .poll returns the element at the front of the queue
+
+            if (nextProposal[student] >= student_preference.get(student).size()) continue;
+
+            int school = student_preference.get(student).get(nextProposal[student]++); // next preferred school
+            Set<Integer> accepted = acceptedStudents.get(school);
+
+            if (accepted.size() < highschool_spots.get(school)) { // accept is school has room
+                accepted.add(student);
+                studentMatching.set(student, school);
+            }else {
+                // check if school prefers this student over the current
+                int worstRank = -1;
+                int worstStudent = -1;
+
+                for (int current : accepted) {
+                    int rank = schoolRank[school][current];
+                    if (rank > worstRank){
+                        worstRank = rank;
+                        worstStudent = current;
+                    }
+                }
+
+                if (schoolRank[school][student] < worstRank) {
+                    accepted.remove(Integer.valueOf(worstStudent)); // replace worststudent
+                    accepted.add(student);
+
+                    studentMatching.set(student, school);
+                    studentMatching.set(worstStudent, -1);
+
+                    freeStudents.add(worstStudent);
+                }else {
+                    freeStudents.add(student); // school rejects student
+                }
+            }
+
+            int proposals = 0;
+        }
         return problem;
     }
 
@@ -152,12 +235,12 @@ public class Program1 extends AbstractProgram1 {
         ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
         ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
 
-        /**
+        /*
          * Initialize student matches to -1 so everyone is unmatched
          */
         ArrayList<Integer> studentMatching = new ArrayList<>(Collections.nCopies(numStudents, -1));
 
-        /**
+        /*
          * Creating a rank lookup for comparisons of offers
          */
         int[][] studentRank = new int[numStudents][numSchools];
@@ -168,7 +251,7 @@ public class Program1 extends AbstractProgram1 {
             }
         }
 
-        /**
+        /*
          * High schools Proposal tracker
          *             And
          * Track the current proposed students per school for quota
@@ -184,7 +267,7 @@ public class Program1 extends AbstractProgram1 {
             }
         }
 
-        /**
+        /*
          * Gale Shapley loop
          */
         while (!freeSchools.isEmpty()) { // runs till schools meet their quota
