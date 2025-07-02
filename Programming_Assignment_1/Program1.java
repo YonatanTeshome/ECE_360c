@@ -103,14 +103,12 @@ public class Program1 extends AbstractProgram1 {
          *              And
          * student s1 prefers school h1 over school h2
          */
-
-
         for (int s1 = 0; s1 < numStudents; s1++) {
             int h1 = studentMatching.get(s1);
             if (h1 == -1) continue;
 
             for (int s2 = 0; s2 < numStudents; s2++) {
-                if (s1 == s2) continue;
+                if (s1 == s2) continue; // makes sure students s1 and s2 are not the same
                 int h2 = studentMatching.get(s2);
                 if (h2 == -1) continue;
 
@@ -120,11 +118,8 @@ public class Program1 extends AbstractProgram1 {
                 if(h1PrefS2 && s2PrefH1) { // both had to be true since its mutual
                     return false;
                 }
-
             }
-
         }
-
         return true; // No instabilities found
     }
 
@@ -150,7 +145,44 @@ public class Program1 extends AbstractProgram1 {
     @Override
     public Matching stableMatchingGaleShapley_highschooloptimal(Matching problem) {
         /* TODO implement this function */
+        int numSchools = problem.getHighSchoolCount();
+        int numStudents = problem.getStudentCount();
 
+        ArrayList<Integer> highschool_spots = problem.getHighSchoolSpots();
+        ArrayList<ArrayList<Integer>> highschool_preference = problem.getHighSchoolPreference();
+        ArrayList<ArrayList<Integer>> student_preference = problem.getStudentPreference();
+
+        /**
+         * Initialize student matches to -1 so everyone is unmatched
+         */
+        ArrayList<Integer> studentMatching = new ArrayList<>(Collections.nCopies(numStudents, -1));
+
+        /**
+         * Creating a rank lookup for comparisons of offers
+         */
+        int[][] studentRank = new int[numStudents][numSchools];
+        for (int student = 0; student < numStudents; student++) {
+            ArrayList<Integer> prefs = highschool_preference.get(student);
+            for (int rank = 0; rank < prefs.size(); rank++) {
+                studentRank[student][prefs.get(rank)] = rank;
+            }
+        }
+
+        /**
+         * High schools Proposal tracker
+         *             And
+         * Track the current proposed students per school for quota
+         */
+        int[] proposal = new int[numSchools]; // proposers are the schools due to the limited spots
+        Queue<Integer> emptySchools = new LinkedList<>();
+
+        List<Set<Integer>> acceptedStudents = new ArrayList<>();
+        for (int school = 0; school < numSchools; school++) {
+            acceptedStudents.add(new HashSet<>());
+            if (highschool_spots.get(school) > 0) {
+                emptySchools.add(school); // enqueue if the school has available spots
+            }
+        }
         return problem;
     }
 }
