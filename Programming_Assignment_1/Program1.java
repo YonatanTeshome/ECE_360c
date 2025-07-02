@@ -91,7 +91,7 @@ public class Program1 extends AbstractProgram1 {
                 if (!highschool_preference.get(h).contains(s)) continue; // school h doesn't want student s
 
                 for(int current : matchedStudents) {
-                    if (schoolRank[h][s] < schoolRank[s][current]) {
+                    if (schoolRank[h][s] < schoolRank[h][current]) {
                         return false; // school h prefers unmatched student s over their current student match
                     }
                 }
@@ -213,9 +213,8 @@ public class Program1 extends AbstractProgram1 {
                     freeStudents.add(student); // school rejects student
                 }
             }
-
-            int proposals = 0;
         }
+        problem.setStudentMatching(studentMatching);
         return problem;
     }
 
@@ -279,7 +278,7 @@ public class Program1 extends AbstractProgram1 {
             while (acceptedStudents.get(school).size() < highschool_spots.get(school)
                                             && nextProposal[school] < prefs.size()) {
 
-                int student = prefs.get(nextProposal[school]+1);
+                int student = prefs.get(nextProposal[school]++);
                 int currMatch = studentMatching.get(student);
 
                 if (currMatch == -1) { // student is unmatched and accepts the school's proposal
