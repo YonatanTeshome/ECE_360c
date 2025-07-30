@@ -20,12 +20,63 @@ public class Driver {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws Exception {
-        students = new ArrayList<Student>();
-        parseArgs(args);
-        parseInputFile(filename);
-        testRun();
-    }
+//    public static void main(String[] args) throws Exception {
+//        students = new ArrayList<Student>();
+//        parseArgs(args);
+//        parseInputFile(filename);
+//        testRun();
+//    }
+public static void main(String[] args) {
+    // ===== HEAP TEST =====
+    System.out.println("=== HEAP FUNCTIONALITY TEST ===");
+
+    // Create some students with different minCosts
+    Student a = new Student(0); a.setminCost(10);
+    Student b = new Student(1); b.setminCost(5);
+    Student c = new Student(2); c.setminCost(7);
+    Student d = new Student(3); d.setminCost(3);
+
+    // Put them into an ArrayList
+    ArrayList<Student> students = new ArrayList<>();
+    students.add(a);
+    students.add(b);
+    students.add(c);
+    students.add(d);
+
+    // 1. Build heap
+    Heap heap = new Heap();
+    heap.buildHeap(students);
+
+    // 2. Print heap after building
+    System.out.println("Heap after build: " + heap.toString());
+    System.out.println("Expected min: Student 3");
+
+    // 3. Test findMin
+    System.out.println("FindMin: " + heap.findMin().getName() + " (Expected: 3)");
+
+    // 4. Test extractMin repeatedly
+    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 3
+    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 1
+    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 2
+    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 0
+
+    // 5. Test insertNode
+    Student e = new Student(4); e.setminCost(2);
+    Student f = new Student(5); f.setminCost(8);
+
+    heap.insertNode(e);
+    heap.insertNode(f);
+
+    System.out.println("Heap after insertions: " + heap.toString());
+    System.out.println("Expected min: Student 4");
+
+    // 6. Test changeKey
+    f.setminCost(1);          // Lower its cost
+    heap.changeKey(f, 1);     // Update in heap
+    System.out.println("Heap after changeKey (Student 5 to cost 1): " + heap.toString());
+    System.out.println("FindMin should now be Student 5: " + heap.findMin().getName());
+}
+
 
     public static void parseArgs(String[] args) {
         boolean flagsPresent = false;

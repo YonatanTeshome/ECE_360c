@@ -84,7 +84,7 @@ public class Program1 extends AbstractProgram1 {
          * Instability type 1: Unmatched student s' is preferred over matched student s at h high school
          */
         for (int s = 0; s < numStudents; s++) {
-            if (schoolMatches.get(s) != null) continue; //filters for unmatched students
+            if (studentMatching.get(s) != -1) continue; //filters for unmatched students
 
             for (int h = 0; h < numSchools; h++) {
                 List<Integer> matchedStudents = schoolMatches.get(h);
@@ -115,7 +115,7 @@ public class Program1 extends AbstractProgram1 {
                 if (h2 == -1) continue;
 
                 boolean h1PrefS2 = schoolRank[h1][s2] < schoolRank[h1][s1]; // The lower the rank the better
-                boolean s2PrefH1 = schoolRank[s2][h1] < schoolRank[s2][h2]; // The lower the rank the better
+                boolean s2PrefH1 = studentRank[s2][h1] < studentRank[s2][h2]; // The lower the rank the better
 
                 if(h1PrefS2 && s2PrefH1) { // both had to be true since its mutual
                     return false;
@@ -273,7 +273,7 @@ public class Program1 extends AbstractProgram1 {
             int school = freeSchools.poll(); // .poll returns the element at the front of the queue
 
             ArrayList<Integer> prefs = highschool_preference.get(school);
-            int proposals = 0;
+            //int proposals = 0;
 
             while (acceptedStudents.get(school).size() < highschool_spots.get(school)
                                             && nextProposal[school] < prefs.size()) {
@@ -290,11 +290,11 @@ public class Program1 extends AbstractProgram1 {
 
                     if (newRank < currRank) {
                         acceptedStudents.get(currMatch).remove(student); // new proposal is better so gets replaced
+                        studentMatching.set(student, school);
+                        acceptedStudents.get(school).add(student);
                         if (acceptedStudents.get(currMatch).size() < highschool_spots.get(currMatch)) {
                             freeSchools.add(currMatch); // requeue old school if it still has space
                         }
-                        studentMatching.set(student, school);
-                        acceptedStudents.get(school).add(student);
                     }
                     // rejected by student
                 }

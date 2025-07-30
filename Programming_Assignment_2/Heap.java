@@ -1,6 +1,6 @@
 /*
- * Name: <your name>
- * EID: <your EID>
+ * Name: Yonatan Teshome
+ * EID: YH23572
  */
 
 // Implement your heap here
@@ -15,7 +15,48 @@ public class Heap {
     public Heap() {
         minHeap = new ArrayList<Student>();
     }
+    // USE AFTER REMOVING THE ROOT OF MOVING A LARGE ELEMENT TO TOP
+    private void heapifyDown(int i) {
+        int smallest = i; // ASSUME CURRENT NODE IS SMALLEST
+        int left = 2*i + 1;
+        int right = 2*i + 2;
 
+        // COMPARE WITH LEFT CHILD
+        if (left < minHeap.size() && isSmaller(minHeap.get(left), minHeap.get(smallest))) {
+            smallest = left;
+        }
+        // COMPARE WITH RIGHT CHILD
+        if (right < minHeap.size() && isSmaller(minHeap.get(right), minHeap.get(smallest))) {
+            smallest = right;
+        }
+
+        if (smallest != i) {
+            swap(i, smallest);
+            heapifyDown(smallest); // RECURSIVE
+        }
+    }
+    // COMPARING TWO STUDENTS AND RETURNS TRUE IF a<b IN HEAP
+    private boolean isSmaller(Student a, Student b) {
+        if (a.getminCost() != b.getminCost()) {
+            return a.getminCost() < b.getminCost();
+        }
+        return a.getName() < b.getName(); // THERE IS A TIE SO GO OFF OF STUDENT NAME
+    }
+    // SWAPS TWO ELEMENTS IN THE HEAP
+    private void swap(int i, int j) {
+        Student temp = minHeap.get(i);
+        minHeap.set(i, minHeap.get(j));
+        minHeap.set(j, temp);
+    }
+
+    private void heapifyUp(int i) {
+        int parent = (i-1) / 2;
+        while (i > 0 && isSmaller(minHeap.get(i), minHeap.get(parent))) {
+            swap(i, parent);
+            i = parent;
+            parent = (i-1) / 2;
+        }
+    }
     /**
      * buildHeap(ArrayList<Student> students)
      * Given an ArrayList of Students, build a min-heap keyed on each Student's minCost
@@ -24,7 +65,11 @@ public class Heap {
      * @param students
      */
     public void buildHeap(ArrayList<Student> students) {
-        // TODO: implement this method
+
+        minHeap = new ArrayList<>(students); // COPY STUDENTS INTO THE HEAP
+        for (int i = minHeap.size() / 2 -1; i >= 0; i--) { // i IS THE LAST NON-LEAF NODE (n/2-1)
+            heapifyDown(i); // MOVES NODE DOWN TILL MIN HEAP IS RESTORED
+        }
     }
 
     /**
@@ -35,7 +80,8 @@ public class Heap {
      * @param in - the Student to insert.
      */
     public void insertNode(Student in) {
-        // TODO: implement this method
+        minHeap.add(in); // ADD TO END
+        heapifyUp(minHeap.size() - 1); // MOVE UP TILL HEAP IS IN PROPER ORDER
     }
 
     /**
@@ -45,8 +91,8 @@ public class Heap {
      * @return the minimum element of the heap.
      */
     public Student findMin() {
-        // TODO: implement this method
-        return null;
+        if (minHeap.isEmpty()) return null;
+        return minHeap.get(0);
     }
 
     /**
@@ -56,8 +102,15 @@ public class Heap {
      * @return the minimum element of the heap, AND removes the element from said heap.
      */
     public Student extractMin() {
-        // TODO: implement this method
-        return null;
+        if (minHeap.isEmpty()) return null;
+        Student min = minHeap.get(0);
+        Student last = minHeap.get(minHeap.size() - 1); // MOVE LAST ELEMENT TO ROOT AND REMOVE LAST
+
+        if (!minHeap.isEmpty()) {
+            minHeap.set(0,last);
+            heapifyDown(0);
+        }
+        return min;
     }
 
     /**
@@ -68,7 +121,17 @@ public class Heap {
      * @param index - the index of the item to be deleted in the min-heap.
      */
     public void delete(int index) {
-        // TODO: implement this method
+        if(index < 0 || index >= minHeap.size()) return;
+
+        // MOVE LAST ELEMENT TO THE INDEX
+        Student last = minHeap.remove(minHeap.size() - 1);
+
+        if (index < minHeap.size()) {
+            minHeap.set(index, last);
+            // RESTORE HEAP PROPERTY
+            heapifyDown(index);
+            heapifyUp(index);
+        }
     }
 
     /**
@@ -80,7 +143,24 @@ public class Heap {
      * @param newCost - the new cost of Student r in the heap (note that the heap is keyed on the values of minCost)
      */
     public void changeKey(Student r, int newCost) {
-        // TODO: implement this method
+        int index = -1;
+        for (int i = 0; i < minHeap.size(); i++) {
+            if (minHeap.get(i).getName() == r.getName()) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) return; // STUDENT NOT FOUND
+
+        int oldCost = minHeap.get(index).getminCost();
+        minHeap.get(index).setminCost(newCost);
+
+        // DECIDED THE DIRECTION TO HEAPIFY
+        if (newCost < oldCost) {
+            heapifyUp(index);
+        } else if (newCost > oldCost) {
+            heapifyDown(index);
+        }
     }
 
     public String toString() {
