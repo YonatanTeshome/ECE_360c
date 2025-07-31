@@ -1,6 +1,6 @@
 /*
- * Name: <your name>
- * EID: <your EID>
+ * Name: Yonatan Teshome
+ * EID: YH23572
  */
 
 // Implement your algorithms here
@@ -13,12 +13,13 @@ public class Program2 {
     private ArrayList<Student> students;    // this is a list of all Students, populated by Driver class
     private Heap minHeap;
 
+
+
     // additional constructors may be added, but don't delete or modify anything already here
     public Program2(int numStudents) {
         minHeap = new Heap();
         students = new ArrayList<Student>();
     }
-
     /**
      * findMinimumStudentCost(Student start, Student dest)
      *
@@ -28,8 +29,37 @@ public class Program2 {
      * Assume the given graph is always connected.
      */
     public int findMinimumStudentCost(Student start, Student dest) {
-        // TODO: implement this function
-        return -1;
+        for (Student s : students) {s.resetminCost();} // RESET ALL STUDENTS MINCOST
+        start.setminCost(0);
+
+        Heap heap = new Heap(); // INITIALIZE HEAP WITH ALL STUDENTS
+        heap.buildHeap(students);
+
+        while (heap.toArrayList().size() > 0) { // DIJKSTRA LOOP
+            Student current = heap.extractMin();
+
+            if (current.getName() == dest.getName()) { // IF WE REACH UT WE FOUND THE CHEAPEST PATH
+                return current.getminCost();
+            }
+
+            // RELAX NEIGHBORS
+            ArrayList<Student> neighbors = current.getNeighbors();
+            ArrayList<Integer> prices = current.getPrices();
+
+            for (int i = 0; i < neighbors.size(); i++) {
+                Student neighbor = neighbors.get(i);
+                int edgeCost = prices.get(i);
+
+                int newCost = current.getminCost() + edgeCost;
+
+                if (newCost < neighbor.getminCost()) { // RELAX EDGE IF WE FOUND CHEAPER PATH
+                    neighbor.setminCost(newCost);
+                    heap.changeKey(neighbor, newCost);
+                }
+            }
+        }
+
+        return -1; // UT WAS NEVER REACHED
     }
 
     /**

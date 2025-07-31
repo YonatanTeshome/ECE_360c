@@ -19,64 +19,103 @@ public class Driver {
         System.err.println("\t-c\tTest findMinimumClassCost implementation");
         System.exit(1);
     }
+/*
 
-//    public static void main(String[] args) throws Exception {
-//        students = new ArrayList<Student>();
-//        parseArgs(args);
-//        parseInputFile(filename);
-//        testRun();
-//    }
-public static void main(String[] args) {
-    // ===== HEAP TEST =====
-    System.out.println("=== HEAP FUNCTIONALITY TEST ===");
+ORIGINAL MAIN
 
-    // Create some students with different minCosts
-    Student a = new Student(0); a.setminCost(10);
-    Student b = new Student(1); b.setminCost(5);
-    Student c = new Student(2); c.setminCost(7);
-    Student d = new Student(3); d.setminCost(3);
 
-    // Put them into an ArrayList
-    ArrayList<Student> students = new ArrayList<>();
-    students.add(a);
-    students.add(b);
-    students.add(c);
-    students.add(d);
+    public static void main(String[] args) throws Exception {
+        students = new ArrayList<Student>();
+        parseArgs(args);
+        parseInputFile(filename);
+        testRun();
+    }
 
-    // 1. Build heap
-    Heap heap = new Heap();
-    heap.buildHeap(students);
+ */
 
-    // 2. Print heap after building
-    System.out.println("Heap after build: " + heap.toString());
-    System.out.println("Expected min: Student 3");
+    /*
+        // ===== HEAP TEST =====
 
-    // 3. Test findMin
-    System.out.println("FindMin: " + heap.findMin().getName() + " (Expected: 3)");
+    public static void main(String[] args) {
+        System.out.println("=== HEAP FUNCTIONALITY TEST ===");
 
-    // 4. Test extractMin repeatedly
-    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 3
-    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 1
-    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 2
-    System.out.println("ExtractMin: " + heap.extractMin().getName()); // 0
+        // Create some students with different minCosts
+        Student a = new Student(0); a.setminCost(10);
+        Student b = new Student(1); b.setminCost(5);
+        Student c = new Student(2); c.setminCost(7);
+        Student d = new Student(3); d.setminCost(3);
 
-    // 5. Test insertNode
-    Student e = new Student(4); e.setminCost(2);
-    Student f = new Student(5); f.setminCost(8);
+        // Put them into an ArrayList
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(a);
+        students.add(b);
+        students.add(c);
+        students.add(d);
 
-    heap.insertNode(e);
-    heap.insertNode(f);
+        // 1. Build heap
+        Heap heap = new Heap();
+        heap.buildHeap(students);
 
-    System.out.println("Heap after insertions: " + heap.toString());
-    System.out.println("Expected min: Student 4");
+        // 2. Print heap after building
+        System.out.println("Heap after build: " + heap.toString());
+        System.out.println("Expected min: Student 3");
 
-    // 6. Test changeKey
-    f.setminCost(1);          // Lower its cost
-    heap.changeKey(f, 1);     // Update in heap
-    System.out.println("Heap after changeKey (Student 5 to cost 1): " + heap.toString());
-    System.out.println("FindMin should now be Student 5: " + heap.findMin().getName());
-}
+        // 3. Test findMin
+        System.out.println("FindMin: " + heap.findMin().getName() + " (Expected: 3)");
 
+        // 4. Test extractMin repeatedly
+        System.out.println("ExtractMin: " + heap.extractMin().getName()); // 3
+        System.out.println("ExtractMin: " + heap.extractMin().getName()); // 1
+        System.out.println("ExtractMin: " + heap.extractMin().getName()); // 2
+        System.out.println("ExtractMin: " + heap.extractMin().getName()); // 0
+
+        // 5. Test insertNode
+        Student e = new Student(4); e.setminCost(2);
+        Student f = new Student(5); f.setminCost(8);
+
+        heap.insertNode(e);
+        heap.insertNode(f);
+
+        System.out.println("Heap after insertions: " + heap.toString());
+        System.out.println("Expected min: Student 4");
+
+        // 6. Test changeKey
+        f.setminCost(1);          // Lower its cost
+        heap.changeKey(f, 1);     // Update in heap
+        System.out.println("Heap after changeKey (Student 5 to cost 1): " + heap.toString());
+        System.out.println("FindMin should now be Student 5: " + heap.findMin().getName());
+    }
+     */
+
+    public static void main(String[] args) {
+        System.out.println("=== DIJKSTRA TEST ===");
+
+        // Step 1: Create Students
+        Student s0 = new Student(0);  // start
+        Student s1 = new Student(1);
+        Student s2 = new Student(2);  // UT
+
+        // Step 2: Connect neighbors (bidirectional edges)
+        s0.setNeighborAndPrice(s1, 4);  // 0->1 cost 4
+        s0.setNeighborAndPrice(s2, 10); // 0->2 cost 10
+        s1.setNeighborAndPrice(s0, 4);  // 1->0 cost 4
+        s1.setNeighborAndPrice(s2, 3);  // 1->2 cost 3
+        s2.setNeighborAndPrice(s0, 10); // 2->0 cost 10
+        s2.setNeighborAndPrice(s1, 3);  // 2->1 cost 3
+
+        // Step 3: Build ArrayList of all students
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(s0);
+        students.add(s1);
+        students.add(s2);
+
+        // Step 4: Test findMinimumStudentCost
+        Program2 program = new Program2(students.size());
+        program.setAllNodesArray(students);  // make sure Program2 has a reference to all students
+        int cost = program.findMinimumStudentCost(s0, s2);
+
+        System.out.println("Minimum cost from 0 to 2: " + cost + " (Expected: 7)");
+    }
 
     public static void parseArgs(String[] args) {
         boolean flagsPresent = false;
