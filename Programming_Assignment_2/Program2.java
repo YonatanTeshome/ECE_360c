@@ -69,8 +69,66 @@ public class Program2 {
      * Assume the given graph is always connected.
      */
     public int findMinimumClassCost() {
-        // TODO: implement this function
-        return -1;
+        // Find the maximum student name to size the visited array properly
+
+        for (Student s : students) { // RESET ALL COSTS
+            s.resetminCost();
+        }
+
+        // START WITH LAST STUDENT IN LIST
+        Student start = students.get(students.size() - 1);
+        start.setminCost(0);
+
+
+        boolean[] visited = new boolean[students.size()];
+        int totCost = 0;
+        int visitedCount = 0;
+
+//        Heap heap = new Heap(); // BUILD THE HEAP
+//        heap.buildHeap(students);
+
+
+        // PRIM'S ALGORITHM LOOP
+        while (visitedCount < students.size()) {
+            ArrayList<Student> unvisited = new ArrayList<>();
+            for (Student s : students) {
+                if(!visited[s.getName()]) {
+                    unvisited.add(s);
+                }
+            }
+            if (unvisited.isEmpty()) break;
+
+            Heap heap = new Heap(); // BUILD THE HEAP
+            heap.buildHeap(unvisited);
+
+            Student current = heap.extractMin();
+            if (current.getminCost() == Integer.MAX_VALUE) {
+                return -1; // Graph is disconnected
+            }
+
+            // MARK AS VISITED
+            visited[current.getName()] = true;
+            visitedCount++;
+            totCost += current.getminCost();
+
+            // RELAX NEIGHBORS
+            ArrayList<Student> neighbors = current.getNeighbors();
+            ArrayList<Integer> prices = current.getPrices();
+
+            for (int i = 0; i < neighbors.size(); i++) {
+                Student neighbor = neighbors.get(i);
+                int edgeCost = prices.get(i);
+
+                // ONLY UPDATE UNVISITED NEIGHBORS
+                if (!visited[neighbor.getName()] && edgeCost < neighbor.getminCost()) {
+                    neighbor.setminCost(edgeCost);
+                    //heap.changeKey(neighbor, edgeCost);
+                }
+            }
+
+        }
+
+        return totCost;
     }
 
     //returns edges and prices in a string.

@@ -19,10 +19,6 @@ public class Driver {
         System.err.println("\t-c\tTest findMinimumClassCost implementation");
         System.exit(1);
     }
-/*
-
-ORIGINAL MAIN
-
 
     public static void main(String[] args) throws Exception {
         students = new ArrayList<Student>();
@@ -31,7 +27,6 @@ ORIGINAL MAIN
         testRun();
     }
 
- */
 
     /*
         // ===== HEAP TEST =====
@@ -86,7 +81,7 @@ ORIGINAL MAIN
         System.out.println("FindMin should now be Student 5: " + heap.findMin().getName());
     }
      */
-
+/*
     public static void main(String[] args) {
         System.out.println("=== DIJKSTRA TEST ===");
 
@@ -116,7 +111,7 @@ ORIGINAL MAIN
 
         System.out.println("Minimum cost from 0 to 2: " + cost + " (Expected: 7)");
     }
-
+*/
     public static void parseArgs(String[] args) {
         boolean flagsPresent = false;
         if (args.length == 0) {
@@ -166,7 +161,7 @@ ORIGINAL MAIN
 
             Integer currNode = Integer.parseInt(pairs[0]);
             Student currentStudent = new Student(currNode);
-            students.add(currNode, currentStudent);
+            students.add(currentStudent);
             ArrayList<NeighborPriceTuple> currNeighbors = new ArrayList<>();
             tempNeighbors.put(currNode, currNeighbors);
 
@@ -223,7 +218,8 @@ ORIGINAL MAIN
             // test out Program2.java findMinimumClassCost here
             System.out.println("\nGiven wire configuration: ");
             System.out.println(testProgram2);
-            System.out.println("Minimum class cost: \n" + testProgram2.findMinimumClassCost());
+            int classCost = testProgram2.findMinimumClassCost();
+            System.out.println("Minimum class cost: \n" + classCost);
         }
     }
 
