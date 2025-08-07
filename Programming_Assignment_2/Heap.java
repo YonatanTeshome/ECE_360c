@@ -49,6 +49,10 @@ public class Heap {
         minHeap.set(j, temp);
     }
 
+    public int length() {
+        return minHeap.size();
+    }
+
     private void heapifyUp(int i) {
         int parent = (i-1) / 2;
         while (i > 0 && isSmaller(minHeap.get(i), minHeap.get(parent))) {
@@ -66,9 +70,13 @@ public class Heap {
      */
     public void buildHeap(ArrayList<Student> students) {
 
-        minHeap = new ArrayList<>(students); // COPY STUDENTS INTO THE HEAP
-        for (int i = minHeap.size() / 2 -1; i >= 0; i--) { // i IS THE LAST NON-LEAF NODE (n/2-1)
-            heapifyDown(i); // MOVES NODE DOWN TILL MIN HEAP IS RESTORED
+//        minHeap = new ArrayList<>(students); // COPY STUDENTS INTO THE HEAP
+//        for (int i = minHeap.size() / 2 -1; i >= 0; i--) { // i IS THE LAST NON-LEAF NODE (n/2-1)
+//            heapifyDown(i); // MOVES NODE DOWN TILL MIN HEAP IS RESTORED
+//        }
+        minHeap = new ArrayList<>();
+        for (Student s : students) {
+            insertNode(s);
         }
     }
 
@@ -102,11 +110,11 @@ public class Heap {
      * @return the minimum element of the heap, AND removes the element from said heap.
      */
     public Student extractMin() {
-        if (minHeap.isEmpty()) return null;
+        if (minHeap.size() == 0) return null;
         Student min = minHeap.get(0);
-        Student last = minHeap.get(minHeap.size() - 1); // MOVE LAST ELEMENT TO ROOT AND REMOVE LAST
+        Student last = minHeap.remove(minHeap.size() - 1); // MOVE LAST ELEMENT TO ROOT AND REMOVE LAST
 
-        if (!minHeap.isEmpty()) {
+        if (minHeap.size() > 0) {
             minHeap.set(0,last);
             heapifyDown(0);
         }
@@ -143,24 +151,21 @@ public class Heap {
      * @param newCost - the new cost of Student r in the heap (note that the heap is keyed on the values of minCost)
      */
     public void changeKey(Student r, int newCost) {
-        int index = -1;
-        for (int i = 0; i < minHeap.size(); i++) {
-            if (minHeap.get(i).getName() == r.getName()) {
-                index = i;
-                break;
-            }
-        }
+        int index = minHeap.indexOf(r);
         if (index == -1) return; // STUDENT NOT FOUND
+        delete(index);
+        r.setminCost(newCost);
+        insertNode(r);
 
-        int oldCost = minHeap.get(index).getminCost();
-        minHeap.get(index).setminCost(newCost);
-
-        // DECIDED THE DIRECTION TO HEAPIFY
-        if (newCost < oldCost) {
-            heapifyUp(index);
-        } else if (newCost > oldCost) {
-            heapifyDown(index);
-        }
+//        int oldCost = minHeap.get(index).getminCost();
+//        minHeap.get(index).setminCost(newCost);
+//
+//        // DECIDED THE DIRECTION TO HEAPIFY
+//        if (newCost < oldCost) {
+//            heapifyUp(index);
+//        } else if (newCost > oldCost) {
+//            heapifyDown(index);
+//        }
     }
 
     public String toString() {

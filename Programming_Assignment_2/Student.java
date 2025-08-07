@@ -47,4 +47,14 @@ public class Student {
     public int getName() {
         return name;
     }
+
+    // COMPARING NAME AND MINCOST
+    public int compare(Student s) {
+        if (this.minCost < s.minCost) return -1;
+        else if (this.minCost > s.minCost) return 1;
+        else{
+            if(this.name < s.name) return -1;
+            else return 1;
+        }
+    }
 }
